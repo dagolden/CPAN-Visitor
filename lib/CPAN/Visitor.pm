@@ -30,9 +30,9 @@ has 'files' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 
 sub BUILD {
   my $self = shift;
-  unless ( 
-    -d $self->cpan && 
-    -d Path::Class::dir($self->cpan, 'authors', 'id') 
+  unless (
+    -d $self->cpan &&
+    -d Path::Class::dir($self->cpan, 'authors', 'id')
   ) {
     die "'cpan' parameter must be the root of a CPAN repository";
   }
@@ -67,7 +67,7 @@ sub select {
 
   # perform search
   my @found;
-  File::Find::find( 
+  File::Find::find(
     {
       no_chdir => 1,
       follow => 0,
@@ -79,7 +79,7 @@ sub select {
           return if /$re/;
         }
         for my $re ( @{$params{match}} ) {
-          return if ! /$re/; 
+          return if ! /$re/;
         }
         (my $f = Path::Class::file($_)->relative($id_dir)) =~ s{./../}{};
         push @found, $f;
@@ -87,7 +87,7 @@ sub select {
     },
     @search_dirs,
   );
-  
+
   if ( $params{append} ) {
     push @{$self->files}, @found;
   }
@@ -117,9 +117,9 @@ sub select {
 #
 #--------------------------------------------------------------------------#
 
-sub _check() { 1 } # always proceed
+sub _check { 1 } # always proceed
 
-sub _start() { 1 } # no special start action
+sub _start { 1 } # no special start action
 
 # _extract returns the proper directory to chdir into
 # if the $job->{stash}{prefer_bin} is true, it will tell Archive::Extract
@@ -155,7 +155,7 @@ sub _extract {
     warn "Couldn't extract '$job->{distpath}'\n" if $Archive::Extract::WARN;
     return;
   }
-  
+
   # most distributions unpack a single directory that we must enter
   # but some behave poorly and unpack to the current directory
   my @children = Path::Class::dir()->children;
@@ -181,7 +181,7 @@ sub _enter {
   return $curdir;
 }
 
-sub _visit() { 1 } # do nothing
+sub _visit { 1 } # do nothing
 
 # chdir out and clean up
 sub _leave {
@@ -190,7 +190,7 @@ sub _leave {
   return 1;
 }
 
-sub _finish() { 1 } # no special finish action
+sub _finish { 1 } # no special finish action
 
 #--------------------------------------------------------------------------#
 # iteration methods
@@ -207,7 +207,7 @@ sub _finish() { 1 } # no special finish action
 # order.  Callbacks get a single hashref argument as described above under
 # default actions.
 #
-#   check -- whether the distribution should be processed; goes to next file 
+#   check -- whether the distribution should be processed; goes to next file
 #            if false; default is always true
 #
 #   start -- used for any setup, logging, etc; default does nothing
@@ -257,7 +257,7 @@ sub _iterate {
     distpath  => $self->_fullpath($distfile),
     tempdir   => File::Temp->newdir(),
     stash     => $self->stash,
-    quiet     => $self->quiet, 
+    quiet     => $self->quiet,
     result    => {},
   };
   $job->{result}{check} = $params->{check}->($job) or return;
@@ -302,7 +302,7 @@ This documentation describes version %%VERSION%%.
     my $visitor = CPAN::Visitor->new( cpan => "/path/to/cpan" );
 
     # Prepare to visit all distributions
-    $visitor->select(); 
+    $visitor->select();
 
     # Or a subset of distributions
     $visitor->select(
@@ -328,17 +328,136 @@ This documentation describes version %%VERSION%%.
 
     # Iterate in parallel
     $visitor->iterate( visitor => \&callback, jobs => 5 );
-    
+
 
 = DESCRIPTION
 
 A very generic, callback-driven program to iterate over a CPAN repository.
 
-Needs much more documentation.
+Needs better documentation and tests, but is provided for others to examine,
+use or contribute to.
 
 = USAGE
 
-TBD.
+== new
+
+  my $visitor = CPAN::Visitor->new( @args );
+
+Object attributes include:
+
+* {cpan} -- path to CPAN or mini CPAN repository. Required.
+* {quiet} -- whether warnings should be silenced (e.g. from extraction). Optional.
+* {stash} -- hash-ref of user-data to be made available during iteration. Optional.
+* {files} -- array-ref with a pre-selection of of distribution files. 
+These must be in AUTHOR/NAME.suffix format. Optional.
+
+== select
+
+  $visitor->select( @args );
+
+Valid arguments include:
+
+* {subtrees} -- path or array-ref of paths.  These must be relative to the
+'authors/id/' directory within a CPAN repo.  If given, only files within
+those subtrees will be considered. If not specified, the entire 'authors/id'
+tree is searched.
+* {exclude} -- qr() or array-ref of qr() patterns.  If a path matches *any*
+pattern, it is excluded
+* {match} -- qr() or array-ref of qr() patterns.  If an array-ref is provided,
+only paths that match *all* patterns are included
+* all_files -- boolean that determines whether all files or only files that have
+a distribution archive suffix are selected.  Default is false.
+* append -- boolean that determines whether the selected files should be 
+appended to previously selected files. The default is false, which replaces
+any previous selection
+
+The {select} method returns a count of files selected.
+
+== iterate
+
+ $visitor->iterate( @args );
+
+Valid arguments include:
+
+* {jobs} -- non-negative integer specifying the maximum number of 
+forked processes. Defaults to none.
+* {check} -- code reference callback
+* {start} -- code reference callback
+* {extract} -- code reference callback
+* {enter} -- code reference callback
+* {visit} -- code reference callback
+* {leave} -- code reference callback
+* {finish} -- code reference callback
+
+See [ACTION CALLBACKS] for more.  Generally, you only need to provide the
+{visit} callback, which is called from inside the unpacked distribution
+directory.
+
+The {iterate} method always returns true.
+
+= ACTION CALLBACKS
+
+Each selected distribution is processed with a series of callback
+functions.  These are each passed a hash-ref with information about
+the particular distribution being processed. 
+
+  sub _my_visit {
+    my $job = shift;
+    # do stuff
+  }
+
+The job hash-ref is initialized with the following fields:
+
+* {distfile} -- the unique, short CPAN distfile name, 
+e.g. DAGOLDEN/CPAN-Visitor-0.001.tar.gz
+* {distpath} -- the absolute path the distribution archive,
+e.g. /my/cpan/authors/id/D/DA/DAGOLDEN/CPAN-Visitor-0.001.tar.gz
+* {tempdir}  -- a File::Temp directory object for extraction or other things
+* {stash}    -- the 'stash' hashref from the Visitor object
+* {quiet}    -- the 'quiet' flag from the Visitor object
+* {result}   -- an empty hashref to start; the return values from each
+action are added and may be referenced by subsequent actions
+
+The {result} field is used to accumulate the return values from action
+callbacks.  For example, the return value from the default 'extract' action is
+the unpacked distribution directory:
+
+  $job->{result}{extract} # distribution directory path
+
+You do not need to store the results yourself -- the {iterate} method
+takes care of it for you.
+
+Callbacks occur in the following order.  Some callbacks skip further
+processing if the return value is false.
+
+* {check} -- determiens whether the distribution should be processed; 
+goes to next file if false; default is always true
+* {start} -- used for any setup, logging, etc; default does nothing
+* {extract} -- extracts a distribution into a temp directory or otherwise
+prepares for visiting; skips to finish action if it returns
+a false value; default returns the path to the extracted
+directory
+* {enter} -- skips to the finish action if it returns false; default takes
+the result of extract, chdir's into it, and returns the
+original directory
+* {visit} -- examine the distribution or otherwise do stuff; the default
+does nothing;
+* {leave} -- default returns to the original directory (the result of enter)
+* {finish} -- any teardown processing, logging, etc.
+
+These allow complete customization of the iteration process.  For example,
+one could do something like this:
+
+* replace the default {extract} callback with one that returns
+an arrayref of distribution files without actually unpacking it into
+a physical directory
+* replace the default {enter} callback with one that does nothing but 
+return a true value; replace the default {leave} callback likewise
+* have the {visit} callback get the {$job->{result}{extract}} listing
+and examine it for the presence of certain files
+
+This could potentially speed up iteration if only the file names within
+the distribution are of interest and not the contents of the actual files.
 
 = BUGS
 
