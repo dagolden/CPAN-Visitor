@@ -1,7 +1,6 @@
 *.bak
 *.old
 *.tmp
-*.tar.gz
 *~
 /Build
 /Build.bat
