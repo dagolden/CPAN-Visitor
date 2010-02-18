@@ -20,3 +20,6 @@ xt/metayml.t
 xt/perlcriticrc
 xt/spelling.t
 xt/stopwords.txt
+lib/CPAN/Visitor.pod
+Makefile.PL
+META.yml
