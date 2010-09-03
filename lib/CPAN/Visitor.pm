@@ -1,3 +1,4 @@
+use 5.006;
 use strict;
 use warnings;
 package CPAN::Visitor;
@@ -5,16 +6,16 @@ package CPAN::Visitor;
 
 use autodie;
 
-use Archive::Extract ();
+use Archive::Extract 0.34 ();
 use File::Find ();
-use File::pushd ();
-use File::Temp ();
-use Path::Class ();
-use Parallel::ForkManager ();
+use File::pushd 1.00 ();
+use File::Temp 0.20 ();
+use Path::Class 0.17 ();
+use Parallel::ForkManager 0.007005 ();
 
-use Moose;
-use MooseX::Params::Validate;
-use namespace::autoclean;
+use Moose 0.93 ;
+use MooseX::Params::Validate 0.13;
+use namespace::autoclean 0.09 ;
 
 has 'cpan'  => ( is => 'ro', required => 1 );
 has 'quiet' => ( is => 'rw', default => 1 );
