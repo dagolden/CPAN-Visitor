@@ -280,6 +280,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage BUILD
+
 =begin wikidoc
 
 = SYNOPSIS
