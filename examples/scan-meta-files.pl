@@ -1,5 +1,4 @@
 # Contributed by Ricardo Signes
-use 5.12.0;
 use CPAN::Visitor;
 use Text::CSV_XS;;
 use YAML::Tiny;
