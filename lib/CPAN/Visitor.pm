@@ -324,10 +324,10 @@ This documentation describes version %%VERSION%%.
       cpan => "/path/to/cpan",
       files => \@distfiles,     # e.g. ANDK/CPAN-1.94.tar.gz
     );
-    $visitor->iterate( visitor => \&callback );
+    $visitor->iterate( visit => \&callback );
 
     # Iterate in parallel
-    $visitor->iterate( visitor => \&callback, jobs => 5 );
+    $visitor->iterate( visit => \&callback, jobs => 5 );
 
 
 = DESCRIPTION
