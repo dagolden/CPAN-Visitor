@@ -2,6 +2,8 @@ Revision history for CPAN-Visitor
 
 {{ $NEXT }}
 
+  - Fix bug in 'match' validation for select()
+
 0.002     2010-09-03 11:10:47 EST5EDT
 
   - Synopsis typo fixes

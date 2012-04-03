@@ -40,7 +40,7 @@ my $archive_re = qr{\.(?:tar\.(?:bz2|gz|Z)|t(?:gz|bz)|zip)$}i;
 
 sub select {
   my ($self, %params) = validated_hash( \@_,
-    match    => { isa => 'RegexpRef | ArrayRef[RegxpRef]', default => [qr/./] },
+    match    => { isa => 'RegexpRef | ArrayRef[RegexpRef]', default => [qr/./] },
     exclude  => { isa => 'RegexpRef | ArrayRef[RegexpRef]', default => [] },
     subtrees => { isa => 'Str | ArrayRef[Str]', default => [] },
     all_files => { isa => 'Bool', default => 0 },
