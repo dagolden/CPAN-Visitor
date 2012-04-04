@@ -228,7 +228,7 @@ processing if the return value is false.
 
 =item *
 
-C<<< check >>> -- determiens whether the distribution should be processed; 
+C<<< check >>> -- determines whether the distribution should be processed;
 goes to next file if false; default is always true
 
 =item *

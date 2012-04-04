@@ -419,7 +419,7 @@ takes care of it for you.
 Callbacks occur in the following order.  Some callbacks skip further
 processing if the return value is false.
 
-* {check} -- determiens whether the distribution should be processed; 
+* {check} -- determines whether the distribution should be processed;
 goes to next file if false; default is always true
 * {start} -- used for any setup, logging, etc; default does nothing
 * {extract} -- extracts a distribution into a temp directory or otherwise
