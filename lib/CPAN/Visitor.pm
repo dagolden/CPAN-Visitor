@@ -3,6 +3,7 @@ use strict;
 use warnings;
 package CPAN::Visitor;
 # ABSTRACT: Generic traversal of distributions in a CPAN repository
+# VERSION
 
 use autodie;
 
