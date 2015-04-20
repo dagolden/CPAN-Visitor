@@ -167,10 +167,11 @@ sub _enter {
   my $curdir = Path::Class::dir()->absolute;
   my $target_dir = $job->{result}{extract} or return;
   if ( -d $target_dir ) {
+    chmod 0755, $target_dir unless -x $target_dir;
     chdir $target_dir;
   }
   else {
-    warn "Can't chdir to non-existing directory '$target_dir'\n";
+    warn "Can't chdir to directory '$target_dir'\n";
     return;
   }
   return $curdir;
