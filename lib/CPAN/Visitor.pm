@@ -239,7 +239,8 @@ sub iterate {
   my $pm = Parallel::ForkManager->new( $params{jobs} > 1 ? $params{jobs} : 0 );
   for my $distfile ( @{ $self->files } ) {
     $pm->start and next;
-    $self->_iterate($distfile, \%params);
+    eval { $self->_iterate($distfile, \%params) };
+    warn "Error visiting $distfile: $@\n" if $@;
     $pm->finish;
   }
   $pm->wait_all_children;
