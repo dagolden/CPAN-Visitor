@@ -168,7 +168,11 @@ sub _enter {
   my $curdir = Path::Class::dir()->absolute;
   my $target_dir = $job->{result}{extract} or return;
   if ( -d $target_dir ) {
-    chmod 0755, $target_dir unless -x $target_dir;
+    unless ( -x $target_dir ) {
+        warn "Directory '$target_dir' missing +x; trying to fix it\n"
+            unless $job->{quiet};
+        chmod 0755, $target_dir;
+    }
     chdir $target_dir;
   }
   else {
