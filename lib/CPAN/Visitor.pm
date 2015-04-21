@@ -172,7 +172,8 @@ sub _enter {
     chdir $target_dir;
   }
   else {
-    warn "Can't chdir to directory '$target_dir'\n";
+    warn "Can't chdir to directory '$target_dir'\n"
+      unless $job->{quiet};
     return;
   }
   return $curdir;
@@ -241,7 +242,7 @@ sub iterate {
   for my $distfile ( @{ $self->files } ) {
     $pm->start and next;
     eval { $self->_iterate($distfile, \%params) };
-    warn "Error visiting $distfile: $@\n" if $@;
+    warn "Error visiting $distfile: $@\n" if $@ && ! $self->quiet;
     $pm->finish;
   }
   $pm->wait_all_children;
