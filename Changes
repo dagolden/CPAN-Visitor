@@ -2,6 +2,15 @@ Revision history for CPAN-Visitor
 
 {{ $NEXT }}
 
+  [Changed]
+
+  - If iterating a distribution throws an exception, it will be caught
+    and a warning issued instead.  This prevents an error from interrupting
+    an entire run.
+
+  - If the extracted directory lacks an executable permission, try
+    chmod +x before chdir into it.
+
 0.003     2012-04-04 16:34:47 America/New_York
 
   - Fix bug in 'match' validation for select()
@@ -15,3 +24,5 @@ Revision history for CPAN-Visitor
 0.001 Wed Feb 17 22:36:37 EST 2010
 
   - First release to CPAN
+
+# vim: ts=2 sts=2 sw=2 et tw=75:
