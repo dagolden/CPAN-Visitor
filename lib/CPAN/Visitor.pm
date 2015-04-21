@@ -3,7 +3,8 @@ use strict;
 use warnings;
 package CPAN::Visitor;
 # ABSTRACT: Generic traversal of distributions in a CPAN repository
-# VERSION
+
+our $VERSION = '0.004';
 
 use autodie;
 
