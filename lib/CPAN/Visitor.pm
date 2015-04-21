@@ -336,12 +336,12 @@ use or contribute to.
 Object attributes include:
 
 =for :list
-* C<cpan> -- path to CPAN or mini CPAN repository. Required.
-* C<quiet> -- whether warnings should be silenced (e.g. from extraction).
+* C<cpan> — path to CPAN or mini CPAN repository. Required.
+* C<quiet> — whether warnings should be silenced (e.g. from extraction).
   Optional.
-* C<stash> -- hash-ref of user-data to be made available during iteration.
+* C<stash> — hash-ref of user-data to be made available during iteration.
   Optional.
-* C<files> -- array-ref with a pre-selection of of distribution files.  These
+* C<files> — array-ref with a pre-selection of of distribution files.  These
   must be in AUTHOR/NAME.suffix format. Optional.
 
 =head2 select
@@ -351,17 +351,17 @@ Object attributes include:
 Valid arguments include:
 
 =for :list
-* C<subtrees> -- path or array-ref of paths to search.  These must be relative
+* C<subtrees> — path or array-ref of paths to search.  These must be relative
   to the 'authors/id/' directory within a CPAN repo.  If given, only files
   within those subtrees will be considered. If not specified, the entire
   'authors/id' tree is searched.
-* C<exclude> -- qr() or array-ref of qr() patterns.  If a path matches *any*
+* C<exclude> — qr() or array-ref of qr() patterns.  If a path matches *any*
   pattern, it is excluded
-* C<match> -- qr() or array-ref of qr() patterns.  If an array-ref is provided,
+* C<match> — qr() or array-ref of qr() patterns.  If an array-ref is provided,
   only paths that match *all* patterns are included
-* all_files -- boolean that determines whether all files or only files that
+* all_files — boolean that determines whether all files or only files that
   have a distribution archive suffix are selected.  Default is false.
-* append -- boolean that determines whether the selected files should be
+* append — boolean that determines whether the selected files should be
   appended to previously selected files. The default is false, which replaces
   any previous selection
 
@@ -374,15 +374,15 @@ The C<select> method returns a count of files selected.
 Valid arguments include:
 
 =for :list
-* C<jobs> -- non-negative integer specifying the maximum number of forked
+* C<jobs> — non-negative integer specifying the maximum number of forked
   processes. Defaults to none.
-* C<check> -- code reference callback
-* C<start> -- code reference callback
-* C<extract> -- code reference callback
-* C<enter> -- code reference callback
-* C<visit> -- code reference callback
-* C<leave> -- code reference callback
-* C<finish> -- code reference callback
+* C<check> — code reference callback
+* C<start> — code reference callback
+* C<extract> — code reference callback
+* C<enter> — code reference callback
+* C<visit> — code reference callback
+* C<leave> — code reference callback
+* C<finish> — code reference callback
 
 See L</ACTION CALLBACKS> for more.  Generally, you only need to provide the
 C<visit> callback, which is called from inside the unpacked distribution
@@ -404,14 +404,14 @@ the particular distribution being processed.
 The job hash-ref is initialized with the following fields:
 
 =for :list
-* C<distfile> -- the unique, short CPAN distfile name, e.g.
+* C<distfile> — the unique, short CPAN distfile name, e.g.
   DAGOLDEN/CPAN-Visitor-0.001.tar.gz
-* C<distpath> -- the absolute path the distribution archive, e.g.
+* C<distpath> — the absolute path the distribution archive, e.g.
   /my/cpan/authors/id/D/DA/DAGOLDEN/CPAN-Visitor-0.001.tar.gz
-* C<tempdir>  -- a File::Temp directory object for extraction or other things
-* C<stash>    -- the 'stash' hashref from the Visitor object
-* C<quiet>    -- the 'quiet' flag from the Visitor object
-* C<result>   -- an empty hashref to start; the return values from each action
+* C<tempdir>  — a File::Temp directory object for extraction or other things
+* C<stash>    — the 'stash' hashref from the Visitor object
+* C<quiet>    — the 'quiet' flag from the Visitor object
+* C<result>   — an empty hashref to start; the return values from each action
   are added and may be referenced by subsequent actions
 
 The C<result> field is used to accumulate the return values from action
@@ -420,29 +420,29 @@ the unpacked distribution directory:
 
   $job->{result}{extract} # distribution directory path
 
-You do not need to store the results yourself -- the C<iterate> method
+You do not need to store the results yourself — the C<iterate> method
 takes care of it for you.
 
 Callbacks occur in the following order.  Some callbacks skip further
 processing if the return value is false.
 
 =for :list
-* C<check> -- determines whether the distribution should be processed; goes to
+* C<check> — determines whether the distribution should be processed; goes to
   next file if false; default is always true
-* C<start> -- used for any setup, logging, etc; default does nothing
-* C<extract> -- operate on the tarball; skips to finish action if it returns a
-  false value; the default extracts a distribution into a temp directory or
-  otherwise prepares for visiting; default returns the path to the extracted
-  directory; if the C<stash> has a true value for C<prefer_bin>, binary tar,
-  etc. will be preferred.  This is faster, but less portable.
-* C<enter> -- skips to the finish action if it returns false; default takes the
+* C<start> — used for any setup, logging, etc; default does nothing
+* C<extract> — operate on the tarball to prepare for visiting; skips to finish
+  action if it returns a false value; the default extracts a distribution into
+  a temp directory and returns the path to the extracted directory; if the
+  C<stash> has a true value for C<prefer_bin>, binary tar, etc. will be
+  preferred.  This is faster, but less portable.
+* C<enter> — skips to the finish action if it returns false; default takes the
   result of extract, chdir's into it, and returns the original directory; if
   the extract result is missing the +x permissions, this will attempt to add it
   before calling chdir.
-* C<visit> -- examine the distribution or otherwise do stuff; the default does
+* C<visit> — examine the distribution or otherwise do stuff; the default does
   nothing;
-* C<leave> -- default returns to the original directory (the result of enter)
-* C<finish> -- any teardown processing, logging, etc.
+* C<leave> — default returns to the original directory (the result of enter)
+* C<finish> — any teardown processing, logging, etc.
 
 These allow complete customization of the iteration process.  For example,
 one could do something like this:
