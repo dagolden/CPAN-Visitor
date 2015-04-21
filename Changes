@@ -2,6 +2,16 @@ Revision history for CPAN-Visitor
 
 {{ $NEXT }}
 
+  [Changed]
+
+  - The 'quiet' option now defaults to false.  This is less surprising
+    to people, as any errors will be visible by default.
+
+  [Fixed]
+
+  - If an exception is caught, the module now changes to the original
+    directory before any tempfiles are cleaned up.
+
 0.004     2015-04-21 12:33:33-04:00 America/New_York
 
   [Changed]
