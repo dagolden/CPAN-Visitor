@@ -245,8 +245,7 @@ sub iterate {
   my $pm = Parallel::ForkManager->new( $params{jobs} > 1 ? $params{jobs} : 0 );
   for my $distfile ( @{ $self->files } ) {
     $pm->start and next;
-    eval { $self->_iterate($distfile, \%params) };
-    warn "Error visiting $distfile: $@\n" if $@ && ! $self->quiet;
+    $self->_iterate($distfile, \%params);
     $pm->finish;
   }
   $pm->wait_all_children;
@@ -255,23 +254,32 @@ sub iterate {
 
 sub _iterate {
   my ($self, $distfile, $params) = @_;
-  my $job = {
-    distfile  => $distfile,
-    distpath  => $self->_fullpath($distfile),
-    tempdir   => File::Temp->newdir(),
-    stash     => $self->stash,
-    quiet     => $self->quiet,
-    result    => {},
+  my $curdir = Path::Class::dir()->absolute;
+
+  # $job outside eval so that later chdir to original directory
+  # happens before $job is destroyed and any tempdirs deleted
+  my $job;
+  eval {
+    $job = {
+        distfile  => $distfile,
+        distpath  => $self->_fullpath($distfile),
+        tempdir   => File::Temp->newdir(),
+        stash     => $self->stash,
+        quiet     => $self->quiet,
+        result    => {},
+    };
+    $job->{result}{check} = $params->{check}->($job) or return;
+    $job->{result}{start} = $params->{start}->($job);
+    ACTION: {
+        $job->{result}{extract} = $params->{extract}->($job) or last ACTION;
+        $job->{result}{enter} = $params->{enter}->($job) or last ACTION;
+        $job->{result}{visit} = $params->{visit}->($job);
+        $job->{result}{leave} = $params->{leave}->($job);
+    }
+    $params->{finish}->($job);
   };
-  $job->{result}{check} = $params->{check}->($job) or return;
-  $job->{result}{start} = $params->{start}->($job);
-  ACTION: {
-    $job->{result}{extract} = $params->{extract}->($job) or last ACTION;
-    $job->{result}{enter} = $params->{enter}->($job) or last ACTION;
-    $job->{result}{visit} = $params->{visit}->($job);
-    $job->{result}{leave} = $params->{leave}->($job);
-  }
-  $params->{finish}->($job);
+  warn "Error visiting $distfile: $@\n" if $@ && ! $self->quiet;
+  chdir $curdir;
   return;
 }
 
