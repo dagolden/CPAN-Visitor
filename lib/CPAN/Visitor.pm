@@ -20,7 +20,7 @@ use MooseX::Params::Validate 0.13;
 use namespace::autoclean 0.09 ;
 
 has 'cpan'  => ( is => 'ro', required => 1 );
-has 'quiet' => ( is => 'rw', default => 1 );
+has 'quiet' => ( is => 'ro', default => 0 );
 has 'stash' => ( is => 'ro', isa => 'HashRef',  default => sub { {} } );
 has 'files' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 
