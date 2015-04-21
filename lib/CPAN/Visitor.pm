@@ -4,7 +4,7 @@ use warnings;
 package CPAN::Visitor;
 # ABSTRACT: Generic traversal of distributions in a CPAN repository
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use autodie;
 
